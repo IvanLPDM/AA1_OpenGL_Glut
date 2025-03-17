@@ -5,7 +5,7 @@
         float cubeY = 0.0f; 
         float cubeSpeed = 0.01f; 
     //Sphere
-
+        float size = 1;
     //Piramide
         float base = 0.3;
         float heigth = 0.5;
@@ -18,7 +18,6 @@ void init() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);  // Establece el color de fondo en negro
     glEnable(GL_DEPTH_TEST);  
 
-   
 }
 
 void update(int value) {
@@ -33,6 +32,20 @@ void update(int value) {
 
     glutPostRedisplay();  
     glutTimerFunc(16, update, 0);  
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+    case '+':  // Mueve el cubo hacia arriba
+        size += 0.1f;
+        break;
+    case '-':  // Mueve el cubo hacia abajo
+        size -= 0.1f;
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay();  // Actualiza la ventana
 }
 
 // Función para dibujar la escena
@@ -51,6 +64,7 @@ void display() {
     // Dibuja la esfera
     glPushMatrix();  //Empezar a crear matriz
     glTranslatef(0.0f, 0.0f, 0.0f);
+    glScalef(size, size, size);
     glColor3f(0.0f, 0.0f, 1.0f); 
     glutSolidSphere(0.2f, 40, 40);  
     glPopMatrix();  //Cerrar matriz y restaurar
@@ -76,6 +90,7 @@ int main(int argc, char** argv) {
     glutCreateWindow("OpenGL Base");
 
     init();
+    glutKeyboardFunc(keyboard);
     glutDisplayFunc(display);  
     glutTimerFunc(16, update, 0);  // Iniciar update
 

@@ -2,7 +2,8 @@
 
 //Variables
     //Cube
-
+        float cubeY = 0.0f; 
+        float cubeSpeed = 0.01f; 
     //Sphere
 
     //Piramide
@@ -21,8 +22,14 @@ void init() {
 }
 
 void update(int value) {
-    value += 1.0f;  // Incrementa el ángulo
-    if (value > 360.0f) value -= 360.0f;
+    angle += 1.0f;  // Incrementa el ángulo
+    if (angle > 360.0f) angle -= 360.0f;
+
+    cubeY += cubeSpeed;
+
+    if (cubeY > 0.8f || cubeY < -0.3f) {
+        cubeSpeed = -cubeSpeed;
+    }
 
     glutPostRedisplay();  
     glutTimerFunc(16, update, 0);  
@@ -35,6 +42,7 @@ void display() {
 
     // Dibuja el cubo
     glPushMatrix();  //Empezar a crear matriz
+    glTranslatef(0.0f, cubeY, 0.0f);  // Mueve el cubo
     glTranslatef(-0.5f, 0.0f, 0.0f);  // Mueve el cubo
     glColor3f(1.0f, 0.0f, 0.0f);  // Establece el color 
     glutSolidCube(0.4f);  // Dibuja un cubo de tamaño x
@@ -50,9 +58,10 @@ void display() {
     ////Piramide
     glPushMatrix();  //Empezar a crear matriz
     glTranslatef(0.5f, -0.2f, 0.0f);
+    glRotatef(angle, 0, 1, 0);  // Rotar para q apunte hacia arriba
     glColor3f(0.0f, 1.0f, 0.0f);
     glRotatef(-90, 1, 0, 0);  // Rotar para q apunte hacia arriba
-    glutSolidCone(base, heigth, slices, stacks);
+    glutWireCone(base, heigth, slices, stacks);
     glPopMatrix();  //Cerrar matriz y restaurar
 
     glFlush();  //Final
@@ -62,12 +71,13 @@ void display() {
 int main(int argc, char** argv) {
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);  // Tamaño de la ventana
+    glutInitWindowSize(1200, 1200);  // Tamaño de la ventana
     glutInitWindowPosition(100, 100);
     glutCreateWindow("OpenGL Base");
 
     init();
     glutDisplayFunc(display);  
+    glutTimerFunc(16, update, 0);  // Iniciar update
 
     glutMainLoop();  // Inicia el ciclo principal de GLUT
     return 0;

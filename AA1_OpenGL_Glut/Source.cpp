@@ -48,11 +48,8 @@ void keyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();  // Actualiza la ventana
 }
 
-// Función para dibujar la escena
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //Limpiar Buffer
-
-
+void drawObjects()
+{
     // Dibuja el cubo
     glPushMatrix();  //Empezar a crear matriz
     glTranslatef(0.0f, cubeY, 0.0f);  // Mueve el cubo
@@ -65,8 +62,8 @@ void display() {
     glPushMatrix();  //Empezar a crear matriz
     glTranslatef(0.0f, 0.0f, 0.0f);
     glScalef(size, size, size);
-    glColor3f(0.0f, 0.0f, 1.0f); 
-    glutSolidSphere(0.2f, 40, 40);  
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glutSolidSphere(0.2f, 40, 40);
     glPopMatrix();  //Cerrar matriz y restaurar
 
     ////Piramide
@@ -77,6 +74,39 @@ void display() {
     glRotatef(-90, 1, 0, 0);  // Rotar para q apunte hacia arriba
     glutWireCone(base, heigth, slices, stacks);
     glPopMatrix();  //Cerrar matriz y restaurar
+}
+
+// Función para dibujar la escena
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //Limpiar Buffer
+
+    //Perspectiva
+    glViewport(0, 0, 600, 1200);  // Mitad izquierda de la ventana
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, 1.0, 1.0, 10.0);  // Proyección en perspectiva
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0, 0.5, 2.0,  
+        0.0, 0.0, 0.0,  
+        0.0, 1.0, 0.0); 
+
+    drawObjects();  // Dibujar los objetos
+
+    //Ortografica
+    glViewport(600, 0, 600, 800);  // Mitad derecha de la ventana
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-1, 1, -1, 1, -10, 10);  // Proyección ortográfica
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0, 0.5, 2.0,  
+        0.0, 0.0, 0.0,  
+        0.0, 1.0, 0.0);
+
+    drawObjects();
 
     glFlush();  //Final
 }

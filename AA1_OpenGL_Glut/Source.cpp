@@ -1,4 +1,8 @@
 #include <GL/glut.h>
+#include <math.h>
+
+//Constantes
+#define M_PI 3.141592f
 
 //Variables
     //Cube
@@ -12,6 +16,11 @@
         float slices = 4;
         float stacks = 4;
         float angle = 0;
+    //Ball
+        float angle_ball = 0;
+        float radius_ball = 1;
+        float vel_ball = 1;
+        float rotation_ball = 0;
 
 // Función para inicializar la configuración de OpenGL
 void init() {
@@ -26,21 +35,44 @@ void update(int value) {
 
     cubeY += cubeSpeed;
 
-    if (cubeY > 0.8f || cubeY < -0.3f) {
+    if (cubeY > 0.8f || cubeY < -0.3f) 
+    {
         cubeSpeed = -cubeSpeed;
     }
+
+    angle_ball += vel_ball;
+
+    if (angle_ball >= 360.0f) 
+    {
+        angle_ball -= 360.0f;
+    }
+
+    rotation_ball += 1.0f;  
+    if (rotation_ball > 360.0f) rotation_ball -= 360.0f;
 
     glutPostRedisplay();  
     glutTimerFunc(16, update, 0);  
 }
 
+void resetScene() {
+    angle = 0;
+    cubeY = 0;
+    size = 1;
+    angle_ball = 0;
+    rotation_ball = 0;
+    glutPostRedisplay();
+}
+
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
-    case '+':  // Mueve el cubo hacia arriba
+    case '+':  // mueve el cubo hacia arriba
         size += 0.1f;
         break;
-    case '-':  // Mueve el cubo hacia abajo
+    case '-':  // mueve el cubo hacia abajo
         size -= 0.1f;
+        break;
+    case 'r':  // resetear la escena
+        resetScene();
         break;
     default:
         break;
@@ -74,7 +106,18 @@ void drawObjects()
     glRotatef(-90, 1, 0, 0);  // Rotar para q apunte hacia arriba
     glutWireCone(base, heigth, slices, stacks);
     glPopMatrix();  //Cerrar matriz y restaurar
+
+    // Dibujar la esfera en movimiento
+    glPushMatrix();
+    float x = radius_ball * cos(angle_ball * M_PI / 180.0f);
+    float z = radius_ball * sin(angle_ball * M_PI / 180.0f);
+    glTranslatef(x, 0.0f, z);  // Mover la esfera en un círculo
+    glRotatef(rotation_ball, 0.0f, 0.0f, 1);
+    glColor3f(1.0f, 1.0f, 0.0f);  // Azul
+    glutWireSphere(0.1f, 20, 20);
+    glPopMatrix();
 }
+
 
 // Función para dibujar la escena
 void display() {
@@ -95,16 +138,16 @@ void display() {
     drawObjects();  // Dibujar los objetos
 
     //Ortografica
-    glViewport(600, 0, 600, 800);  // Mitad derecha de la ventana
+    glViewport(600, 0, 600, 1200);  // Mitad derecha de la ventana
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(-1, 1, -1, 1, -10, 10);  // Proyección ortográfica
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0, 0.5, 2.0,  
-        0.0, 0.0, 0.0,  
-        0.0, 1.0, 0.0);
+    gluLookAt(0.0, 0.2, 0.0, 
+        0.0, 0.0, 0.0,
+        0.0, 0.0, -1.0);
 
     drawObjects();
 
